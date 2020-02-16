@@ -1,0 +1,56 @@
+@startuml
+hide footbox
+
+actor User
+participant Unity
+participant "CloudFunctions\nrequestToken" as requestToken
+participant "CloudFunctions\naccessToken" as accessToken
+participant Twitter
+participant "CloudFunctions\ntwitterCallback" as twitterCallback
+participant "Firebase\ndynamic links" as dynamiclinks
+participant "Firebase\nAuthorization" as auth
+participant "Firebase\nrealtime database" as database
+
+User -> Unity
+Unity -> requestToken
+
+activate Unity
+activate requestToken
+requestToken -> Twitter : requestTokenを取得する
+activate Twitter
+Twitter -> requestToken
+deactivate Twitter
+requestToken -> Unity
+deactivate requestToken
+
+Unity -> Twitter : requestTokenを用いてtwitterの認証画面を表示
+deactivate Unity
+activate Twitter
+Twitter -> User
+activate User
+User -> Twitter : Twitter認証を承諾する
+deactivate User
+Twitter -> twitterCallback
+deactivate Twitter
+activate twitterCallback
+twitterCallback -> dynamiclinks
+deactivate twitterCallback
+
+activate dynamiclinks
+dynamiclinks -> Unity : Unityスキーマにリダイレクトさせて、oauth_verifierを返す
+deactivate dynamiclinks
+
+activate Unity
+Unity -> accessToken : oauth_verifierを含めてaccessTokenを取得する
+activate accessToken
+accessToken -> Twitter
+activate Twitter
+Twitter -> accessToken
+deactivate Twitter
+accessToken -> Unity : accessTokenを取得する
+deactivate accessToken
+
+Unity -> auth : accessTokenをauthへ登録
+Unity -> database : auth登録されたのでデータベースアクセス接続可能
+
+@enduml
