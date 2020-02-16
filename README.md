@@ -10,3 +10,5 @@ Create Google Cloud Functions.
 
 Create Unity project.
 TwitterAuth.cs replace your url and attach gameobject.
+
+https://hoshikimamanari.hatenablog.jp/entry/2020/02/16/181031
